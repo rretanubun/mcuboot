@@ -50,11 +50,9 @@ class PasswordRequired(Exception):
 
 
 def load(path, passwd=None):
-    """Try loading a key from the given path.
-      Returns None if the password wasn't specified."""
-    if path == "pkcs11":
+    if path.startswith("pkcs11:"):
         try:
-            return PKCS11()
+            return PKCS11(path)  # assume a PKCS #11 URI according to RFC7512
         except pkcs11.exceptions.PinIncorrect:
             print('ERROR: WRONG PIN')
             sys.exit(1)
@@ -62,10 +60,11 @@ def load(path, passwd=None):
             print('ERROR: WRONG PIN, MAX ATTEMPTS REACHED. CONTACT YOUR SECURITY OFFICER.')
             sys.exit(1)
         except pkcs11.exceptions.DataLenRange:
-            print('ERROR: \'DataLenRange\' (maybe the PIN is too short?)')
+            print('ERROR: PIN IS TOO SHORT OR TOO LONG')
             sys.exit(1)
 
-    """Try loading a key from the given path.  Returns None if the password wasn't specified."""
+    """Try loading a key from the given path.
+      Returns None if the password wasn't specified."""
     with open(path, 'rb') as f:
         raw_pem = f.read()
     try:
