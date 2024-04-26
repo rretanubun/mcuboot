@@ -131,7 +131,7 @@ class PKCS11(KeyClass):
         return "ECDSA256_SHA256"
 
     def sig_tlv(self):
-        return "ECDSA256"
+        return "ECDSASIG"
 
     def sig_len(self):
         # The DER encoding depends on the high bit, and can be
